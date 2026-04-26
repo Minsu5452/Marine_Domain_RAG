@@ -64,7 +64,3 @@ python -m marine_domain_rag.cli eval
 ```
 
 LLM을 로드하지 않고 검색 품질만 확인할 때는 `configs/default.yaml`에서 mock provider를 사용합니다.
-
-## 공개 범위
-
-공개 저장소는 공개 API 데이터 기반 재현 흐름만 포함합니다. 회사 코드, 내부 데이터, fine-tuned model weight, confidential evaluation result, production infrastructure는 포함하지 않습니다.
