@@ -1,0 +1,30 @@
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+.env
+.ipynb_checkpoints/
+.DS_Store
+
+data/raw/*
+data/processed/*
+data/external/*
+!data/raw/.gitkeep
+!data/processed/.gitkeep
+!data/external/.gitkeep
+
+# HF model cache
+hf_cache/
+.cache/
+
+# FAISS / GraphRAG indices
+*.faiss
+*.index
+*.parquet
+*.bin
+
+# LLM weights
+models/
+
+# eval outputs
+outputs/

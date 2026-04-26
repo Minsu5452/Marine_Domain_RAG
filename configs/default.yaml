@@ -1,0 +1,37 @@
+law_api:
+  base_url: https://www.law.go.kr/DRF
+  oc_env: LAW_OC
+  ministries:
+  - 해양수산부
+  - 해양경찰청
+  max_per_ministry: 30
+embedding:
+  model_name: snunlp/KR-SBERT-V40K-klueNLI-augSTS
+  batch_size: 16
+  max_seq_length: 256
+retrieval:
+  top_k: 5
+  bm25_weight: 0.4
+  embed_weight: 0.6
+graph:
+  cooccurrence_window: 1
+  min_term_frequency: 3
+  top_terms_per_article: 8
+llm:
+  # provider: exaone_gguf (권장, llama.cpp + GGUF, CPU 안정) | exaone (transformers, MPS) | mock
+  provider: exaone_gguf
+  model_name: LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct
+  gguf_repo_id: LGAI-EXAONE/EXAONE-3.5-2.4B-Instruct-GGUF
+  gguf_filename: EXAONE-3.5-2.4B-Instruct-Q4_K_M.gguf
+  device: cpu
+  dtype: float32
+  max_new_tokens: 256
+  temperature: 0.2
+  # node_answer 진입 직전에 retriever 의 sbert 를 CPU 로 옮겨 메모리 압박 회피
+  release_retriever_to_cpu: true
+paths:
+  raw_laws_dir: data/raw/laws
+  articles_parquet: data/processed/articles.parquet
+  faiss_dir: data/processed/index
+  graph_path: data/processed/graph.gpickle
+  eval_suite: tests/qa_pairs.yaml
