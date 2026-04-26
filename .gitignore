@@ -6,12 +6,9 @@ __pycache__/
 .ipynb_checkpoints/
 .DS_Store
 
-data/raw/*
-data/processed/*
-data/external/*
-!data/raw/.gitkeep
-!data/processed/.gitkeep
-!data/external/.gitkeep
+data/raw/
+data/processed/
+data/external/
 
 # HF model cache
 hf_cache/
