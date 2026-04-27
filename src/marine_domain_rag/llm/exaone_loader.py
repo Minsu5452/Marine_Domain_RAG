@@ -15,16 +15,32 @@ logger = logging.getLogger(__name__)
 
 
 class MockLLM:
-    """LLM 다운로드/로드가 불가할 때 fallback. 컨텍스트만 echo."""
+    """LLM 다운로드/로드가 불가할 때 fallback. 컨텍스트만 echo.
+
+    multi-LLM 비교 시 동일한 인터페이스로 token 카운트를 노출하기 위해
+    ``last_usage`` 를 채워 둔다 (whitespace 토큰화 근사).
+    """
 
     def __init__(self, name: str = "mock") -> None:
         self.name = name
+        self.last_usage: dict[str, int] = {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+        }
 
     def generate(self, system: str, user: str, *, max_new_tokens: int = 512,
                  temperature: float = 0.2) -> str:
-        return ("[MOCK LLM 응답]\n"
-                "사용자 질문: " + user[:200] + "\n"
-                "(실제 LLM 미적용 — 컨텍스트 기반 retrieve 결과만 노출됩니다)")
+        out = ("[MOCK LLM 응답]\n"
+               "사용자 질문: " + user[:200] + "\n"
+               "(실제 LLM 미적용 — 컨텍스트 기반 retrieve 결과만 노출됩니다)")
+        self.last_usage = {
+            "prompt_tokens": len((system + " " + user).split()),
+            "completion_tokens": len(out.split()),
+            "total_tokens": (len((system + " " + user).split())
+                             + len(out.split())),
+        }
+        return out
 
 
 class ExaoneGGUFLLM:
@@ -52,6 +68,11 @@ class ExaoneGGUFLLM:
             verbose=False,
         )
         self.name = f"{repo_id}::{filename}"
+        self.last_usage: dict[str, int] = {
+            "prompt_tokens": 0,
+            "completion_tokens": 0,
+            "total_tokens": 0,
+        }
 
     def generate(self, system: str, user: str, *, max_new_tokens: int = 256,
                  temperature: float = 0.2) -> str:
@@ -63,6 +84,12 @@ class ExaoneGGUFLLM:
             max_tokens=max_new_tokens,
             temperature=temperature,
         )
+        usage = out.get("usage") or {}
+        self.last_usage = {
+            "prompt_tokens": int(usage.get("prompt_tokens", 0)),
+            "completion_tokens": int(usage.get("completion_tokens", 0)),
+            "total_tokens": int(usage.get("total_tokens", 0)),
+        }
         return out["choices"][0]["message"]["content"].strip()
 
 

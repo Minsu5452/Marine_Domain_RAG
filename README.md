@@ -120,3 +120,27 @@ python scripts/eval_decompose_ablation.py --skip-llm \
 | llm | LLM 분해, mock/미가용 환경에서는 noun fallback (사유 기록) | 0.600 (fallback) |
 
 데모 환경(EXAONE GGUF 로드 불가 가정)에서는 `llm` 전략이 `noun` 으로 fallback 되어 동일 점수가 나옵니다. 흥미로운 관찰은 이 작은 스위트에서 `raw` 가 `noun` 보다 +0.2 더 높다는 점인데, 명사 추출이 조사·어미가 붙은 토큰("임용에", "어떻게")을 sub_query 로 추가해 BM25 노이즈로 작용한 결과로 해석됩니다. 실 운영에서는 KoNLPy 같은 형태소 분석기로 명사만 추출하거나 LLM 분해를 사용해야 하며, 본 ablation 스크립트가 그 비교 인프라를 제공합니다.
+
+## Multi-LLM 비용·품질 비교
+
+같은 retriever / 같은 QA 스위트로 여러 LLM 후보를 돌려 질문당 token 사용량 + cite_match_rate + latency 를 비교하는 스크립트입니다 (`scripts/eval_llm_cost_quality.py`). 비교 후보는 GGUF quant 단계와 transformers 백엔드를 포함하며, 환경상 다운로드/로드가 불가한 후보는 `status="load_failed"` 로 기록되어 의사결정 근거로 남습니다.
+
+```bash
+python scripts/eval_llm_cost_quality.py \
+    --candidates mock,exaone_gguf_iq4xs,exaone_gguf_q4 \
+    --report reports/llm_cost_quality.json
+```
+
+데모 스위트(5개 샘플) 실측치는 다음과 같습니다 (Mac M-series CPU, n_ctx=4096).
+
+| 후보 | load(s) | avg prompt tok | avg completion tok | cite_match | avg latency (s) | 비고 |
+| --- | --- | --- | --- | --- | --- | --- |
+| MockLLM (echo) | 0.00 | 165.4 | 57.2 | 0.600 | 0.07 | 비용 0 baseline. retrieval 결과 노출 전용. |
+| EXAONE-3.5-2.4B GGUF IQ4_XS | 48.12 | 475.8 | 149.6 | 0.600 | 5.86 | 가장 작은 quant. 첫 로드 시 다운로드 포함. |
+| EXAONE-3.5-2.4B GGUF Q4_K_M | 2.24 | 475.8 | 116.6 | 0.600 | 5.43 | 현재 default. 캐시 적중. |
+
+두 GGUF quant 의 prompt 토큰은 동일 컨텍스트 사용으로 같으며, completion 토큰과 latency 가 약간 다릅니다. 본 5개 스위트 기준 cite_match 는 동률이라 retrieval 단계가 이미 정답 조문을 top-k 안에 넣어주면 quant 차이는 답변 품질에 결정적이지 않다는 신호로 해석됩니다.
+
+### 비용 효율적 모델 선택 가이드
+
+해당 데모 규모에서는 retrieval 정확도가 cite_match 의 상한을 결정하므로, LLM은 컨텍스트를 충실히 따라갈 수 있는 가장 작은 모델 (현 데모에서는 EXAONE-3.5-2.4B GGUF Q4_K_M, ~1.5GB) 부터 시작하는 것이 비용 효율적입니다. 답변의 완결성·문체·지시 준수가 더 중요한 사용 사례에서는 동일 모델의 Q5_K_M / Q6_K 로 단계적으로 키우며 cite_match 와 nonempty_rate, 그리고 사용자 만족도(별도 평가 필요)의 기울기를 측정해 멈출 지점을 찾는 것을 권장합니다. 본 스크립트가 그 단계별 비교 인프라(load 시간, 토큰 평균, cite_match, latency)를 한 표로 제공합니다.
