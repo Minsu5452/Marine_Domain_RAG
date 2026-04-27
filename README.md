@@ -64,3 +64,39 @@ python -m marine_domain_rag.cli eval
 ```
 
 LLM을 로드하지 않고 검색 품질만 확인할 때는 `configs/default.yaml`에서 mock provider를 사용합니다.
+
+## Retrieval vs LLM contribution
+
+기존 `eval` 명령은 hit@k(retrieval 기여)와 cite_match(LLM의 인용 충실도)를 한 번에 측정해, 성능이 떨어졌을 때 어느 컴포넌트가 원인인지 분리하기 어려웠습니다. 컴포넌트별 기여도를 가시화하기 위해 두 단계로 나눠 측정하는 스크립트를 추가했습니다.
+
+```bash
+# retrieval-only 빠른 측정 (LLM 로드 없이 hybrid retriever만 평가)
+python scripts/eval_retrieval_vs_llm.py --skip-llm \
+    --report reports/retrieval_vs_llm_skip_llm.json
+
+# LLM-augmented 전체 측정 (configs/default.yaml의 llm.provider 사용)
+python scripts/eval_retrieval_vs_llm.py \
+    --report reports/retrieval_vs_llm.json
+```
+
+`tests/qa_pairs.yaml` 각 샘플에 `gold_citations`(우선 정답 인용)와 `acceptable_alternatives`(허용 대안)를 추가해, 정답이 한 조문으로 좁혀지지 않는 사례도 평가에 반영했습니다.
+
+리포트는 다음 4개 지표 + 3가지 오류 분류를 함께 출력합니다.
+
+| 지표 | 의미 |
+| --- | --- |
+| retrieval_hit@k | retriever 단독으로 정답 조문을 top-k 안에 가져온 비율 |
+| cite_match_rate | LangGraph 워크플로우 최종 citations에 정답이 포함된 비율 |
+| nonempty_rate | LLM이 비공백 답변을 생성한 비율 |
+| avg_latency_sec | 샘플당 평균 응답 시간 |
+| retrieved_but_not_cited | retrieval은 정답을 가져왔지만 최종 인용에 빠진 사례 수 |
+| not_retrieved | retrieval부터 정답을 못 가져온 사례 수 |
+| llm_hallucination | 답변 본문에 컨텍스트의 어떤 법령명도 등장하지 않은 사례 수 (휴리스틱) |
+
+데모 스위트(5개 샘플) 기준 retrieval-only 모드 측정값은 다음과 같습니다(LLM은 로드하지 않음, mock fallback).
+
+| samples | retrieval_hit@k | cite_match_rate | nonempty | retrieved_but_not_cited | not_retrieved | llm_hallucination | avg_latency_sec |
+| --- | --- | --- | --- | --- | --- | --- | --- |
+| 5 | 0.800 | 0.600 | 1.000 | 1 | 1 | 0 | 0.07 |
+
+해석: top-5 안에 정답을 못 가져온 1건은 retriever 단계에서 개선해야 하고, 가져왔지만 인용으로 안 넘어간 1건은 rerank/cite 단계의 점수 컷오프 또는 graph_expand 가중치 문제로 좁혀집니다. LLM-augmented 모드를 추가로 돌리면 같은 5건 중 LLM이 외부 지식만으로 답해버린 케이스(`llm_hallucination`)가 별도로 카운트되어, "검색은 잘 됐는데 LLM이 무시했다" 와 "검색이 못 따라갔다" 를 분리해 볼 수 있습니다.

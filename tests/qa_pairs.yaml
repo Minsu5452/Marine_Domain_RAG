@@ -1,13 +1,63 @@
 # 소규모 QA 평가 스위트 — gold_law 는 retrieve 정답 기준.
 # 데모 collect 가 12개 법령(주로 직제·복제·임용 규정)을 모았으므로
 # 그 범위 안에서 답변 가능한 질문들로 구성.
+#
+# Retrieval-only vs LLM-augmented 분리 평가용 필드:
+#   gold_law              : 정답 법령명(부분 일치)
+#   gold_article          : 정답 조문번호(선택, 부분 일치)
+#   gold_citations        : LLM 답변이 인용해야 할 우선 인용 (law_name + article_no 쌍)
+#   acceptable_alternatives : 동일 사안을 보충하는 대안 인용 (정답 조문이 명확히
+#                              하나로 좁혀지지 않는 사례를 위해 허용)
+#
+# 이 스위트는 hit@k(retrieval), cite_match(LLM 인용 정확도) 를
+# 분리해 측정하기 위해 사용한다 (scripts/eval_retrieval_vs_llm.py).
 - question: "해양경찰교육원장의 학칙 제정 절차는 어떻게 되나요?"
   gold_law: "해양경찰청 소속 경찰공무원 교육훈련규정"
+  gold_article: "14"
+  gold_citations:
+    - law_name: "해양경찰청 소속 경찰공무원 교육훈련규정"
+      article_no: "14"
+  acceptable_alternatives:
+    - law_name: "해양경찰청 소속 경찰공무원 교육훈련규정"
+      article_no: "9"
+
 - question: "해양경찰청 소속 경찰공무원의 임용권자는 누구인가요?"
   gold_law: "해양경찰청 소속 경찰공무원 임용에 관한 규정"
+  gold_article: "4"
+  gold_citations:
+    - law_name: "해양경찰청 소속 경찰공무원 임용에 관한 규정"
+      article_no: "4"
+  acceptable_alternatives:
+    - law_name: "해양경찰청 소속 경찰공무원 임용에 관한 규정"
+      article_no: "5"
+
 - question: "해양경찰청 직원의 복제 기준은 어떻게 정해지나요?"
   gold_law: "해양경찰청 소속 경찰공무원 복제에 관한 규칙"
+  gold_citations:
+    - law_name: "해양경찰청 소속 경찰공무원 복제에 관한 규칙"
+      article_no: "5"
+  acceptable_alternatives:
+    - law_name: "해양경찰청 소속 경찰공무원 복제에 관한 규칙"
+      article_no: "2"
+    - law_name: "해양경찰청 소속 경찰공무원 복제에 관한 규칙"
+      article_no: "4"
+
 - question: "해양수산부 직원의 복제 사항은 어떤 규칙에서 정하나요?"
   gold_law: "해양수산부 직원 복제규칙"
+  gold_citations:
+    - law_name: "해양수산부 직원 복제규칙"
+      article_no: "3"
+  acceptable_alternatives:
+    - law_name: "해양수산부 직원 복제규칙"
+      article_no: "1"
+    - law_name: "해양수산부 직원 복제규칙"
+      article_no: "2"
+
 - question: "해양수산부 비상대비 업무는 어떤 시행규칙이 적용되나요?"
   gold_law: "해양수산부 소관 비상대비에 관한 법률 시행규칙"
+  gold_citations:
+    - law_name: "해양수산부 소관 비상대비에 관한 법률 시행규칙"
+      article_no: "1"
+  acceptable_alternatives:
+    - law_name: "해양수산부 소관 비상대비에 관한 법률 시행규칙"
+      article_no: "2"

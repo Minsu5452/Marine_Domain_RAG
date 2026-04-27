@@ -1,0 +1,80 @@
+{
+  "n": 5,
+  "top_k": 5,
+  "llm_provider": "skip",
+  "llm_name": "skip-llm",
+  "retrieval_hit_at_k": 0.8,
+  "cite_match_rate": 0.6,
+  "nonempty_rate": 1.0,
+  "retrieved_but_not_cited": 1,
+  "not_retrieved": 1,
+  "llm_hallucination": 0,
+  "avg_latency_sec": 0.06961779594421387,
+  "per_sample": [
+    {
+      "question": "해양경찰교육원장의 학칙 제정 절차는 어떻게 되나요?",
+      "retrieval_hit": true,
+      "cite_hit": true,
+      "nonempty": true,
+      "hallucination": false,
+      "latency_sec": 0.077,
+      "top_citations": [
+        "해양경찰청 소속 경찰공무원 교육훈련규정 제14조",
+        "해양경찰청 소속 경찰공무원 교육훈련규정 제2조",
+        "해양경찰청 소속 경찰공무원 교육훈련규정 제4조"
+      ]
+    },
+    {
+      "question": "해양경찰청 소속 경찰공무원의 임용권자는 누구인가요?",
+      "retrieval_hit": false,
+      "cite_hit": false,
+      "nonempty": true,
+      "hallucination": false,
+      "latency_sec": 0.067,
+      "top_citations": [
+        "해양경찰청 소속 경찰공무원 임용에 관한 규정 시행규칙 제38조",
+        "해양경찰청 소속 경찰공무원 임용에 관한 규정 제40조",
+        "해양경찰청 소속 경찰공무원 임용에 관한 규정 제1조"
+      ]
+    },
+    {
+      "question": "해양경찰청 직원의 복제 기준은 어떻게 정해지나요?",
+      "retrieval_hit": true,
+      "cite_hit": false,
+      "nonempty": true,
+      "hallucination": false,
+      "latency_sec": 0.068,
+      "top_citations": [
+        "해양수산부 직원 복제규칙 제3조",
+        "해양경찰청 소속 경찰공무원 임용에 관한 규정 제1조",
+        "해양경찰청과 그 소속기관 직제 시행규칙 제2조"
+      ]
+    },
+    {
+      "question": "해양수산부 직원의 복제 사항은 어떤 규칙에서 정하나요?",
+      "retrieval_hit": true,
+      "cite_hit": true,
+      "nonempty": true,
+      "hallucination": false,
+      "latency_sec": 0.068,
+      "top_citations": [
+        "해양수산부 직원 복제규칙 제3조",
+        "해양수산부와 그 소속기관 직제 시행규칙 제2조",
+        "해양수산부 직원 복제규칙 제8조"
+      ]
+    },
+    {
+      "question": "해양수산부 비상대비 업무는 어떤 시행규칙이 적용되나요?",
+      "retrieval_hit": true,
+      "cite_hit": true,
+      "nonempty": true,
+      "hallucination": false,
+      "latency_sec": 0.068,
+      "top_citations": [
+        "해양수산부와 그 소속기관 직제 시행규칙 제2조",
+        "해양수산부 소관 비상대비에 관한 법률 시행규칙 제1조",
+        "해양수산부 소관 비상대비에 관한 법률 시행규칙 제8조"
+      ]
+    }
+  ]
+}
