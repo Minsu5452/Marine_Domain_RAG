@@ -51,18 +51,25 @@ def _format_context(hits: pd.DataFrame, top_k: int = 5) -> str:
 
 
 def build_app(retriever, graph, llm, *, top_k: int = 5,
-              release_retriever_to_cpu: bool = False):
+              release_retriever_to_cpu: bool = False,
+              decompose_strategy: str = "noun"):
     """retriever (HybridRetriever), graph (nx.MultiDiGraph), llm (load_llm 결과) 주입.
 
     release_retriever_to_cpu=True 면 LLM 호출 직전에 sentence-transformers 모델을
     CPU 로 이동시켜 GPU/MPS 메모리 압박을 회피한다.
+
+    decompose_strategy: "raw" | "noun" | "llm" — query decomposition 전략 (ablation).
     """
+    from .decompose import get_strategy
+
+    _decompose = get_strategy(decompose_strategy, llm=llm)
 
     def node_decompose(state: RAGState) -> dict:
-        # 가벼운 휴리스틱: 질문에서 명사/구를 추출 (실프로젝트는 LLM 분해)
-        toks = [t for t in state.question.replace("?", " ").split() if len(t) >= 2]
-        sub = list(dict.fromkeys([state.question] + toks[:3]))
-        return {"sub_queries": sub, "debug": {**state.debug, "decompose": sub}}
+        sub = _decompose(state.question)
+        return {"sub_queries": sub,
+                "debug": {**state.debug,
+                          "decompose": sub,
+                          "decompose_strategy": decompose_strategy}}
 
     def node_retrieve(state: RAGState) -> dict:
         frames = []

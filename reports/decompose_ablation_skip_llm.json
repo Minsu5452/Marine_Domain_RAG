@@ -1,0 +1,187 @@
+{
+  "top_k": 5,
+  "llm_name": "skip-llm",
+  "skip_llm": true,
+  "results": [
+    {
+      "strategy": "raw",
+      "hit_at_k": 0.8,
+      "n": 5,
+      "fallback_reasons": [],
+      "per_sample": [
+        {
+          "question": "해양경찰교육원장의 학칙 제정 절차는 어떻게 되나요?",
+          "sub_queries": [
+            "해양경찰교육원장의 학칙 제정 절차는 어떻게 되나요?"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": true
+        },
+        {
+          "question": "해양경찰청 소속 경찰공무원의 임용권자는 누구인가요?",
+          "sub_queries": [
+            "해양경찰청 소속 경찰공무원의 임용권자는 누구인가요?"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": false
+        },
+        {
+          "question": "해양경찰청 직원의 복제 기준은 어떻게 정해지나요?",
+          "sub_queries": [
+            "해양경찰청 직원의 복제 기준은 어떻게 정해지나요?"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": true
+        },
+        {
+          "question": "해양수산부 직원의 복제 사항은 어떤 규칙에서 정하나요?",
+          "sub_queries": [
+            "해양수산부 직원의 복제 사항은 어떤 규칙에서 정하나요?"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": true
+        },
+        {
+          "question": "해양수산부 비상대비 업무는 어떤 시행규칙이 적용되나요?",
+          "sub_queries": [
+            "해양수산부 비상대비 업무는 어떤 시행규칙이 적용되나요?"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": true
+        }
+      ]
+    },
+    {
+      "strategy": "noun",
+      "hit_at_k": 0.6,
+      "n": 5,
+      "fallback_reasons": [],
+      "per_sample": [
+        {
+          "question": "해양경찰교육원장의 학칙 제정 절차는 어떻게 되나요?",
+          "sub_queries": [
+            "해양경찰교육원장의 학칙 제정 절차는 어떻게 되나요?",
+            "해양경찰교육원장의",
+            "학칙",
+            "제정"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": true
+        },
+        {
+          "question": "해양경찰청 소속 경찰공무원의 임용권자는 누구인가요?",
+          "sub_queries": [
+            "해양경찰청 소속 경찰공무원의 임용권자는 누구인가요?",
+            "해양경찰청",
+            "소속",
+            "경찰공무원의"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": false
+        },
+        {
+          "question": "해양경찰청 직원의 복제 기준은 어떻게 정해지나요?",
+          "sub_queries": [
+            "해양경찰청 직원의 복제 기준은 어떻게 정해지나요?",
+            "해양경찰청",
+            "직원의",
+            "복제"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": false
+        },
+        {
+          "question": "해양수산부 직원의 복제 사항은 어떤 규칙에서 정하나요?",
+          "sub_queries": [
+            "해양수산부 직원의 복제 사항은 어떤 규칙에서 정하나요?",
+            "해양수산부",
+            "직원의",
+            "복제"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": true
+        },
+        {
+          "question": "해양수산부 비상대비 업무는 어떤 시행규칙이 적용되나요?",
+          "sub_queries": [
+            "해양수산부 비상대비 업무는 어떤 시행규칙이 적용되나요?",
+            "해양수산부",
+            "비상대비",
+            "업무는"
+          ],
+          "fallback_reason": null,
+          "retrieval_hit": true
+        }
+      ]
+    },
+    {
+      "strategy": "llm",
+      "hit_at_k": 0.6,
+      "n": 5,
+      "fallback_reasons": [
+        "llm_unavailable_or_mock",
+        "llm_unavailable_or_mock",
+        "llm_unavailable_or_mock",
+        "llm_unavailable_or_mock",
+        "llm_unavailable_or_mock"
+      ],
+      "per_sample": [
+        {
+          "question": "해양경찰교육원장의 학칙 제정 절차는 어떻게 되나요?",
+          "sub_queries": [
+            "해양경찰교육원장의 학칙 제정 절차는 어떻게 되나요?",
+            "해양경찰교육원장의",
+            "학칙",
+            "제정"
+          ],
+          "fallback_reason": "llm_unavailable_or_mock",
+          "retrieval_hit": true
+        },
+        {
+          "question": "해양경찰청 소속 경찰공무원의 임용권자는 누구인가요?",
+          "sub_queries": [
+            "해양경찰청 소속 경찰공무원의 임용권자는 누구인가요?",
+            "해양경찰청",
+            "소속",
+            "경찰공무원의"
+          ],
+          "fallback_reason": "llm_unavailable_or_mock",
+          "retrieval_hit": false
+        },
+        {
+          "question": "해양경찰청 직원의 복제 기준은 어떻게 정해지나요?",
+          "sub_queries": [
+            "해양경찰청 직원의 복제 기준은 어떻게 정해지나요?",
+            "해양경찰청",
+            "직원의",
+            "복제"
+          ],
+          "fallback_reason": "llm_unavailable_or_mock",
+          "retrieval_hit": false
+        },
+        {
+          "question": "해양수산부 직원의 복제 사항은 어떤 규칙에서 정하나요?",
+          "sub_queries": [
+            "해양수산부 직원의 복제 사항은 어떤 규칙에서 정하나요?",
+            "해양수산부",
+            "직원의",
+            "복제"
+          ],
+          "fallback_reason": "llm_unavailable_or_mock",
+          "retrieval_hit": true
+        },
+        {
+          "question": "해양수산부 비상대비 업무는 어떤 시행규칙이 적용되나요?",
+          "sub_queries": [
+            "해양수산부 비상대비 업무는 어떤 시행규칙이 적용되나요?",
+            "해양수산부",
+            "비상대비",
+            "업무는"
+          ],
+          "fallback_reason": "llm_unavailable_or_mock",
+          "retrieval_hit": true
+        }
+      ]
+    }
+  ]
+}

@@ -100,3 +100,23 @@ python scripts/eval_retrieval_vs_llm.py \
 | 5 | 0.800 | 0.600 | 1.000 | 1 | 1 | 0 | 0.07 |
 
 해석: top-5 안에 정답을 못 가져온 1건은 retriever 단계에서 개선해야 하고, 가져왔지만 인용으로 안 넘어간 1건은 rerank/cite 단계의 점수 컷오프 또는 graph_expand 가중치 문제로 좁혀집니다. LLM-augmented 모드를 추가로 돌리면 같은 5건 중 LLM이 외부 지식만으로 답해버린 케이스(`llm_hallucination`)가 별도로 카운트되어, "검색은 잘 됐는데 LLM이 무시했다" 와 "검색이 못 따라갔다" 를 분리해 볼 수 있습니다.
+
+## Query decomposition 전략 ablation
+
+LangGraph 워크플로우의 `node_decompose` 가 사용하는 분해 전략을 추상화해 (`src/marine_domain_rag/langgraph_app/decompose.py`), 같은 retriever / 같은 QA 스위트로 hit@k 변화를 비교했습니다.
+
+```bash
+python scripts/eval_decompose_ablation.py \
+    --report reports/decompose_ablation.json
+# LLM 미가용 환경에서는 --skip-llm 으로 raw / noun 만 실측, llm 은 fallback 표시
+python scripts/eval_decompose_ablation.py --skip-llm \
+    --report reports/decompose_ablation_skip_llm.json
+```
+
+| strategy | 설명 | hit@k |
+| --- | --- | --- |
+| raw | 분해 없이 원 질문 한 번 검색 | 0.800 |
+| noun | 길이 ≥ 2 토큰 상위 3개 + 원 질문 (현재 baseline) | 0.600 |
+| llm | LLM 분해, mock/미가용 환경에서는 noun fallback (사유 기록) | 0.600 (fallback) |
+
+데모 환경(EXAONE GGUF 로드 불가 가정)에서는 `llm` 전략이 `noun` 으로 fallback 되어 동일 점수가 나옵니다. 흥미로운 관찰은 이 작은 스위트에서 `raw` 가 `noun` 보다 +0.2 더 높다는 점인데, 명사 추출이 조사·어미가 붙은 토큰("임용에", "어떻게")을 sub_query 로 추가해 BM25 노이즈로 작용한 결과로 해석됩니다. 실 운영에서는 KoNLPy 같은 형태소 분석기로 명사만 추출하거나 LLM 분해를 사용해야 하며, 본 ablation 스크립트가 그 비교 인프라를 제공합니다.
